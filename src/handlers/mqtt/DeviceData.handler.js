@@ -1,4 +1,5 @@
 import { customLogger } from "../../middlewares/logging.middleware.js";
+import { DeviceDataDecoder } from "../data/DataDecoder.handler.js";
 import { TopicHandler } from "./base.handler.js";
 
 export class DeviceDataHandler extends TopicHandler {
@@ -11,10 +12,27 @@ export class DeviceDataHandler extends TopicHandler {
   static handleDeviceData(topic, message) {
     try {
       const { macId, typeId } = TopicHandler.parseMacAndTypeId(topic);
+
       console.log(
         `Received data from ${macId} (${typeId}):`,
         message.toString()
       );
+
+      const { modbusData } = JSON.parse(message.toString());
+
+      // Basic data validation
+      if (!modbusData || !Array.isArray(modbusData)) {
+        throw new Error(
+          `Invalid data format from MAC: ${macId} & Type: ${typeId}`
+        );
+      }
+
+      console.log(modbusData.length);
+
+      //   const decodedData = DeviceDataDecoder.decode(typeId, message.toString());
+
+      // Group readings if needed
+      //   const groupedReadings = DeviceDataDecoder.getGroupedReadings(decodedData);
     } catch (error) {
       customLogger.error(`Error in handleDeviceData: ${error.message}`);
     }
