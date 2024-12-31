@@ -1,0 +1,56 @@
+import "dotenv/config";
+import { APPLICATION_ENV_TYPES } from "../utils/constants.js";
+
+export const config = {
+  PORT: process.env.PORT,
+  rateLimit: {
+    windowMs: 5 * 60 * 1000,
+    max: 100,
+  },
+  cors: {
+    origin:
+      process.env.NODE_ENV === APPLICATION_ENV_TYPES.PROD
+        ? [process.env.CORS_PROD_ORIGIN]
+        : [process.env.CORS_DEV_ORIGIN],
+    credentials: true,
+  },
+  SOCKET_CORS: {
+    origin:
+      process.env.NODE_ENV === APPLICATION_ENV_TYPES.PROD
+        ? [process.env.CORS_PROD_ORIGIN]
+        : [process.env.CORS_DEV_ORIGIN],
+
+    methods: ["GET", "POST"],
+  },
+  ENV: process.env.NODE_ENV,
+  API_VERSION: 1,
+  JWT: {
+    ACCESS_TOKEN: {
+      SECRET: process.env.JWT_ACCESS_TOKEN_SECRET,
+      EXPIRES_IN: "1d",
+    },
+    REFRESH_TOKEN: {
+      SECRET: process.env.JWT_REFRESH_TOKEN_SECRET,
+      EXPIRES_IN: "7d",
+    },
+  },
+  COOKIE: {
+    REFRESH_MAX_AGE: 1000 * 60 * 60 * 24 * 7, // 7 days
+    ACCESS_MAX_AGE: 1000 * 60 * 60 * 24, // 1 day
+  },
+  PROD_WEB_URL: process.env.CORS_PROD_ORIGIN,
+  MQTT: {
+    HOST: process.env.MQTT_HOST,
+    PORT: process.env.MQTT_PORT,
+    USERNAME: process.env.MQTT_USERNAME,
+    PASSWORD: process.env.MQTT_PASSWORD,
+  },
+  EMAIL: {
+    SMTP_HOST: process.env.SMTP_HOST,
+    SMTP_PORT: process.env.SMTP_PORT,
+    SMTP_USER: process.env.SMTP_USER,
+    SMTP_PASSWORD: process.env.SMTP_PASSWORD,
+    SMTP_FROM_EMAIL: process.env.SMTP_FROM_EMAIL,
+  },
+  SECURE_COOKIE: true,
+};
