@@ -13,6 +13,7 @@ export class DeviceDataHandler extends TopicHandler {
   static handleDeviceData(topic, message) {
     try {
       const { macId, typeId } = TopicHandler.parseMacAndTypeId(topic);
+      console.log(`Received data from MAC: ${macId} & Type: ${typeId}`);
 
       const { modbusData } = JSON.parse(message.toString());
 
@@ -25,7 +26,7 @@ export class DeviceDataHandler extends TopicHandler {
 
       const decodedData = DeviceDataDecoder.decode(typeId, message.toString());
 
-      getIo().emit(`device-data-${macId}`, {
+      getIo().emit(`device-data-${macId}-${typeId}`, {
         macId,
         typeId,
         data: decodedData,
