@@ -11,12 +11,9 @@ export class DeviceDataDecoder {
   static initialize() {
     try {
       // In production, this would load from database
-      DeviceDataDecoder.#deviceTypeConfigs.set(
-        deviceTypeConfig.typeId,
-        deviceTypeConfig
-      );
-
-      console.log(this.#deviceTypeConfigs);
+      deviceTypeConfig.forEach((config) => {
+        DeviceDataDecoder.#deviceTypeConfigs.set(config.typeId, config);
+      });
 
       console.log("Device type configurations loaded");
     } catch (error) {
@@ -104,9 +101,6 @@ export class DeviceDataDecoder {
    */
   static decode(typeId, rawData) {
     try {
-
-      
-
       const config = DeviceDataDecoder.#deviceTypeConfigs.get(parseInt(typeId));
       if (!config) {
         throw new Error(`Unknown device type: ${typeId}`);

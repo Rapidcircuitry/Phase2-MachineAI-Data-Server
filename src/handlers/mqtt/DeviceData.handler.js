@@ -1,3 +1,4 @@
+import { getIo } from "../../config/socket.config.js";
 import { customLogger } from "../../middlewares/logging.middleware.js";
 import { DeviceDataDecoder } from "../data/DataDecoder.handler.js";
 import { TopicHandler } from "./base.handler.js";
@@ -13,11 +14,6 @@ export class DeviceDataHandler extends TopicHandler {
     try {
       const { macId, typeId } = TopicHandler.parseMacAndTypeId(topic);
 
-      console.log(
-        `Received data from ${macId} (${typeId}):`,
-        message.toString()
-      );
-
       const { modbusData } = JSON.parse(message.toString());
 
       // Basic data validation
@@ -27,9 +23,13 @@ export class DeviceDataHandler extends TopicHandler {
         );
       }
 
-      console.log(modbusData.length);
+      const decodedData = DeviceDataDecoder.decode(typeId, message.toString());
 
-      //   const decodedData = DeviceDataDecoder.decode(typeId, message.toString());
+      getIo().emit(`device-data-${macId}`, {
+        macId,
+        typeId,
+        data: decodedData,
+      });
 
       // Group readings if needed
       //   const groupedReadings = DeviceDataDecoder.getGroupedReadings(decodedData);
