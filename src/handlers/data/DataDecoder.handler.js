@@ -29,7 +29,7 @@ export class DeviceDataDecoder {
         });
       });
 
-      console.log(DeviceDataDecoder.#deviceTypeConfigs);
+      console.log(`Device Configurations initialized`);
     } catch (error) {
       customLogger.error(
         `Failed to initialize device decoder: ${error.message}`
