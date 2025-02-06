@@ -8,17 +8,20 @@ datasource db {
 }
 
 model SystemUser {
-  id              Int                @id @default(autoincrement()) @map("user_id")
-  fullName        String             @map("user_full_name")
-  email           String             @unique @map("user_email")
-  phone           String             @unique @map("user_phone")
-  isActive        Boolean            @default(true) @map("is_active")
-  isDeleted       Boolean            @default(false) @map("is_deleted")
-  isEmailVerified Boolean            @default(false) @map("is_email_verified")
-  password        String             @map("user_password")
-  createdAt       DateTime           @default(now()) @map("created_at")
-  updatedAt       DateTime           @updatedAt @map("updated_at")
-  sessions        SystemUserSession?
+  id                     Int                @id @default(autoincrement()) @map("user_id")
+  fullName               String             @map("user_full_name")
+  email                  String             @unique @map("user_email")
+  phone                  String             @unique @map("user_phone")
+  isActive               Boolean            @default(true) @map("is_active")
+  isDeleted              Boolean            @default(false) @map("is_deleted")
+  isEmailVerified        Boolean            @default(false) @map("is_email_verified")
+  password               String             @map("user_password")
+  createdAt              DateTime           @default(now()) @map("created_at")
+  updatedAt              DateTime           @updatedAt @map("updated_at")
+  reset_token            String?
+  reset_token_expires_at DateTime?
+  user_type              String             @default("dashboard_user")
+  sessions               SystemUserSession?
 
   @@index([email], map: "user_email_index")
   @@index([phone], map: "user_phone_index")
@@ -26,7 +29,7 @@ model SystemUser {
 }
 
 model SystemUserSession {
-  id         Int        @id @default(autoincrement()) @map("session_id")
+  id         String     @id @map("session_id")
   userId     Int        @unique @map("user_id")
   token      String
   expiresAt  DateTime   @map("expires_at")
@@ -41,7 +44,6 @@ model DeviceType {
   id                       Int                  @id @default(autoincrement()) @map("device_type_id")
   name                     String               @map("device_type_name")
   description              String               @map("device_type_description")
-  config                   Json                 @map("device_type_config")
   isActive                 Boolean              @default(true) @map("is_active")
   isDeleted                Boolean              @default(false) @map("is_deleted")
   createdAt                DateTime             @default(now()) @map("created_at")
@@ -63,6 +65,7 @@ model DeviceOwner {
   isDeleted Boolean   @default(false) @map("is_deleted")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
+  device_id Int       @unique
   devices   Devices[]
 
   @@index([email], map: "owner_email_index")
@@ -117,8 +120,18 @@ model DeviceToDeviceType {
   id             Int        @id @default(autoincrement())
   device_id      Int
   device_type_id Int
-  DevicesInfo    Devices    @relation(fields: [device_id], references: [id])
+  DevicesInfo    Devices    @relation(fields: [device_id], references: [id], onDelete: Cascade)
   DeviceTypeInfo DeviceType @relation(fields: [device_type_id], references: [id])
 
   @@unique([device_id, device_type_id])
+}
+
+model DeviceTemplateInfo {
+  device_template_id          Int      @id @default(autoincrement())
+  device_template_name        String
+  device_template_description String?
+  device_template_config      Json
+  is_active                   Boolean  @default(true)
+  created_at                  DateTime @default(now())
+  updated_at                  DateTime
 }

@@ -234,3 +234,7 @@ export const decodeJwtToken = (token, tokenType = TOKEN_TYPES.ACCESS) => {
     };
   }
 };
+
+export const getCombinedDeviceTypeId = (deviceId, typeId) => {
+  return `${deviceId}-${typeId}`;
+};

@@ -20,6 +20,7 @@ import { initSocketManager } from "./src/service/core/socket.service.js";
 import { initMqttConnectionClient } from "./src/config/mqtt.config.js";
 import { createSocketConfig } from "./src/config/socket.config.js";
 import { DeviceDataDecoder } from "./src/handlers/data/DataDecoder.handler.js";
+import actionRoutes from "./src/routes/action.route.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -75,6 +76,8 @@ app.get("/", (req, res) => {
   });
 });
 
+app.use("/api/v1/action", actionRoutes);
+
 // Route for handling 404 errors
 app.use((req, res) => {
   logger.warn("Route Not Found", {
@@ -99,7 +102,7 @@ const startServer = async () => {
     initMqttConnectionClient();
     initMqttManager(io);
 
-    DeviceDataDecoder.initialize();
+    await DeviceDataDecoder.initialize();
 
     server.listen(config.PORT, () => {
       logger.info(`Server started on port ${config.PORT}`);
