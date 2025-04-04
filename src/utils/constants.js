@@ -11,7 +11,6 @@ export const APPLICATION_ENV_TYPES = Object.freeze({
   PROD: "production",
 });
 
-
 // Constants for topic prefixes and types
 export const TOPICS = {
   REGISTER: {
@@ -124,6 +123,7 @@ export const SOCKET_EVENTS = {
   DEVICE_INPUT_STATES: "device-input-states",
   DEVICE_OUTPUT_STATES: "device-output-states",
   DEVICE_ACK: "device-ack",
+  DEVICE_DATA_ERROR: (macId, typeId) => `device-data-error-${macId}-${typeId}`,
 };
 
 export const VALIDATION_TYPES = Object.freeze({
@@ -140,6 +140,5 @@ export const VALIDATION_TYPES = Object.freeze({
   DATETIME: "datetime",
   CUSTOM: "custom",
 });
-
 
 export const TOTAL_IO_CHANNELS = 4;
