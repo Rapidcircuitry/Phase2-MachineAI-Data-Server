@@ -42,23 +42,28 @@ export class DeviceDataHandler extends TopicHandler {
         );
         console.log("Decoded data", decodedData);
 
-        getIo().emit(`device-data-${macId}-${typeId}`, {
+        getIo().emit(SOCKET_EVENTS.DEVICE_DATA(macId, typeId), {
           macId,
           typeId,
-          data: decodedData,
+          data: { ...decodedData, timestamp: new Date().toISOString() },
         });
       } else {
         // 4-20mA device types
         const { A } = JSON.parse(message.toString());
 
-        getIo().emit(`device-data-${macId}-${typeId}`, {
+        console.log(
+          "Emitting data for 4-20mA device types at topic",
+          SOCKET_EVENTS.DEVICE_DATA(macId, 0)
+        );
+
+        getIo().emit(SOCKET_EVENTS.DEVICE_DATA(macId, 0), {
           macId,
           typeId,
-          data: { A },
+          data: { A, timestamp: new Date().toISOString() },
         });
       }
     } catch (error) {
-      customLogger.error(`Error in handleDeviceData: ${error.message}`);
+      // customLogger.error(`Error in handleDeviceData: ${error.message}`);
       getIo().emit(
         SOCKET_EVENTS.DEVICE_DATA_ERROR(macId, typeId),
         error.message
