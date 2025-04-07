@@ -238,3 +238,27 @@ export const decodeJwtToken = (token, tokenType = TOKEN_TYPES.ACCESS) => {
 export const getCombinedDeviceTypeId = (deviceId, typeId) => {
   return `${deviceId}-${typeId}`;
 };
+
+/**
+ * Maps a value from one range to another.
+ *
+ * @param {number} value - The value to map.
+ * @param {number} fromMin - The minimum value of the source range.
+ * @param {number} fromMax - The maximum value of the source range.
+ * @param {number} toMin - The minimum value of the target range.
+ * @param {number} toMax - The maximum value of the target range.
+ * @returns {number} - The mapped value.
+ *
+ * @example
+ * const value = 5;
+ * const fromMin = 0;
+ * const fromMax = 10;
+ * const toMin = 0;
+ * const toMax = 100;
+ * const mappedValue = mapRange(value, fromMin, fromMax, toMin, toMax);
+ * console.log(mappedValue); // 50
+ */
+export function mapRange(value, fromMin, fromMax, toMin, toMax) {
+  const scaledValue = (value - fromMin) / (fromMax - fromMin);
+  return toMin + scaledValue * (toMax - toMin);
+}

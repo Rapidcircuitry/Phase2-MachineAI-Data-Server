@@ -16,11 +16,11 @@ model SystemUser {
   isDeleted              Boolean            @default(false) @map("is_deleted")
   isEmailVerified        Boolean            @default(false) @map("is_email_verified")
   password               String             @map("user_password")
-  createdAt              DateTime           @default(now()) @map("created_at")
-  updatedAt              DateTime           @updatedAt @map("updated_at")
+  user_type              String             @default("dashboard_user")
   reset_token            String?
   reset_token_expires_at DateTime?
-  user_type              String             @default("dashboard_user")
+  createdAt              DateTime           @default(now()) @map("created_at")
+  updatedAt              DateTime           @updatedAt @map("updated_at")
   sessions               SystemUserSession?
 
   @@index([email], map: "user_email_index")
@@ -44,13 +44,13 @@ model DeviceType {
   id                       Int                  @id @default(autoincrement()) @map("device_type_id")
   name                     String               @map("device_type_name")
   description              String               @map("device_type_description")
+  device_type_model        String
+  device_type_manufacturer String
+  device_type_protocol     String
   isActive                 Boolean              @default(true) @map("is_active")
   isDeleted                Boolean              @default(false) @map("is_deleted")
   createdAt                DateTime             @default(now()) @map("created_at")
   updatedAt                DateTime             @updatedAt @map("updated_at")
-  device_type_manufacturer String
-  device_type_model        String
-  device_type_protocol     String
   DeviceToDeviceType       DeviceToDeviceType[]
 
   @@map("DeviceTypeInfo")
@@ -62,10 +62,10 @@ model DeviceOwner {
   email     String    @unique @map("owner_email")
   phone     String?   @unique @map("owner_phone")
   isActive  Boolean   @default(true) @map("is_active")
+  device_id Int       @unique
   isDeleted Boolean   @default(false) @map("is_deleted")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
-  device_id Int       @unique
   devices   Devices[]
 
   @@index([email], map: "owner_email_index")
@@ -74,30 +74,36 @@ model DeviceOwner {
 }
 
 model Devices {
-  id                 Int                  @id @default(autoincrement()) @map("device_id")
-  name               String?              @map("device_name")
-  description        String?              @map("device_description")
-  macId              String               @unique @map("device_mac_id")
-  chipId             String               @unique @map("device_chip_id")
-  config             Json?                @map("device_custom_config")
-  ioMapping          Json?                @map("device_io_mapping")
-  dataInterval       Int?                 @map("device_data_interval")
-  lastConnectedAt    DateTime?            @map("last_connected_at")
-  ownerId            Int?                 @map("owner_id")
-  isConfigured       Boolean              @default(false) @map("is_configured")
-  isPaused           Boolean              @default(false) @map("is_paused")
-  isActive           Boolean              @default(false) @map("is_active")
-  isDeleted          Boolean              @default(false) @map("is_deleted")
-  createdAt          DateTime             @default(now()) @map("created_at")
-  updatedAt          DateTime             @updatedAt @map("updated_at")
-  emailScheduleTime  String?              @map("device_email_schedule_time")
-  recipientEmails    String[]             @map("device_recipient_emails")
-  cronSchedule       String?              @map("device_cron_schedule")
-  inputStates        Boolean[]            @default([false, false, false, false]) @map("device_input_states")
-  outputStates       Boolean[]            @default([false, false, false, false]) @map("device_output_states")
-  DeviceData         DeviceData[]
-  DeviceToDeviceType DeviceToDeviceType[]
-  owner              DeviceOwner?         @relation(fields: [ownerId], references: [id])
+  id                   Int                    @id @default(autoincrement()) @map("device_id")
+  name                 String?                @map("device_name")
+  description          String?                @map("device_description")
+  macId                String                 @unique @map("device_mac_id")
+  chipId               String                 @unique @map("device_chip_id")
+  config               Json?                  @map("device_custom_config")
+  ioMapping            Json?                  @map("device_io_mapping")
+  inputStates          Boolean[]              @default([false, false, false, false]) @map("device_input_states")
+  outputStates         Boolean[]              @default([false, false, false, false]) @map("device_output_states")
+  dataInterval         Int?                   @map("device_data_interval")
+  emailScheduleTime    String?                @map("device_email_schedule_time")
+  cronSchedule         String?                @map("device_cron_schedule")
+  recipientEmails      String[]               @map("device_recipient_emails")
+  lastConnectedAt      DateTime?              @map("last_connected_at")
+  ownerId              Int?                   @map("owner_id")
+  isConfigured         Boolean                @default(false) @map("is_configured")
+  isPaused             Boolean                @default(false) @map("is_paused")
+  isActive             Boolean                @default(false) @map("is_active")
+  isDeleted            Boolean                @default(false) @map("is_deleted")
+  createdAt            DateTime               @default(now()) @map("created_at")
+  updatedAt            DateTime               @updatedAt @map("updated_at")
+  analog_input_max     Float?
+  analog_input_min     Float?
+  analog_input_type    AnalogInputType?
+  analog_input_unit    String?
+  analog_label         String?
+  AnalogDeviceDataInfo AnalogDeviceDataInfo[]
+  DeviceData           DeviceData[]
+  DeviceToDeviceType   DeviceToDeviceType[]
+  owner                DeviceOwner?           @relation(fields: [ownerId], references: [id])
 
   @@index([macId], map: "device_mac_id_index")
   @@index([chipId], map: "device_chip_id_index")
@@ -134,4 +140,22 @@ model DeviceTemplateInfo {
   is_active                   Boolean  @default(true)
   created_at                  DateTime @default(now())
   updated_at                  DateTime
+}
+
+model AnalogDeviceDataInfo {
+  data_id        Int             @id @default(autoincrement())
+  device_id      Int
+  input_type     AnalogInputType
+  input_min      Float
+  input_max      Float
+  data_value     Float
+  data_unit      String
+  data_timestamp DateTime        @default(now())
+  data_label     String
+  DevicesInfo    Devices         @relation(fields: [device_id], references: [id])
+}
+
+enum AnalogInputType {
+  FOUR_TO_TWENTY
+  ZERO_TO_TEN
 }

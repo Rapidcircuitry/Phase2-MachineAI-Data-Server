@@ -144,3 +144,19 @@ export const VALIDATION_TYPES = Object.freeze({
 });
 
 export const TOTAL_IO_CHANNELS = 4;
+
+export const ANALOG_INPUT_TYPES = Object.freeze({
+  TYPES: ["FOUR_TO_TWENTY", "ZERO_TO_TEN"],
+  FOUR_TO_TWENTY: {
+    key: "FOUR_TO_TWENTY",
+    label: "4-20mA",
+    min: 4,
+    max: 20,
+  },
+  ZERO_TO_TEN: {
+    key: "ZERO_TO_TEN",
+    label: "0-10V",
+    min: 0,
+    max: 10,
+  },
+});

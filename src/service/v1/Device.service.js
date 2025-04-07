@@ -8,6 +8,9 @@ export class DeviceService {
         select: {
           macId: true,
           config: true,
+          analog_input_type: true,
+          analog_input_min: true,
+          analog_input_max: true,
         },
       });
       return devices;

@@ -6,7 +6,7 @@ import { getCombinedDeviceTypeId } from "../../utils/helpers/app.utils.js";
 
 export class DeviceDataDecoder {
   static #deviceTypeConfigs = new Map();
-
+  static #devices = new Map();
   /**
    * Initialize the decoder with device configurations
    * Should be called when server starts
@@ -15,6 +15,10 @@ export class DeviceDataDecoder {
     try {
       const templates = await TemplateService.loadAllTemplates();
       const devices = await DeviceService.loadAllDevices();
+
+      devices.forEach((device) => {
+        DeviceDataDecoder.#devices.set(device.macId, device);
+      });
 
       devices.forEach((device) => {
         const config = device.config;
@@ -36,6 +40,15 @@ export class DeviceDataDecoder {
       );
       throw error;
     }
+  }
+
+  /**
+   * Get device by macId
+   * @param {string} macId - The macId of the device
+   * @returns {Object} The device object
+   */
+  static getDeviceByMacId(macId) {
+    return DeviceDataDecoder.#devices.get(macId);
   }
 
   /**
