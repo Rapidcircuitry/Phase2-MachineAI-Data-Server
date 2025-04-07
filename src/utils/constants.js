@@ -125,6 +125,7 @@ export const SOCKET_EVENTS = {
   DEVICE_ACK: "device-ack",
   DEVICE_DATA_ERROR: (macId, typeId) => `device-data-error-${macId}-${typeId}`,
   DEVICE_DATA: (macId, typeId) => `device-data-${macId}-${typeId}`,
+  DEVICE_STATUS: (macId) => `device:${macId}:status`,
 };
 
 export const VALIDATION_TYPES = Object.freeze({

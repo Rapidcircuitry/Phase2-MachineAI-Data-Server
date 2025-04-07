@@ -1,9 +1,9 @@
 import { getIo } from "../../config/socket.config.js";
-import { customLogger } from "../../middlewares/logging.middleware.js";
 import { SOCKET_EVENTS } from "../../utils/constants.js";
 import { getCombinedDeviceTypeId } from "../../utils/helpers/app.utils.js";
 import { DeviceDataDecoder } from "../data/DataDecoder.handler.js";
 import { TopicHandler } from "./base.handler.js";
+import { updateDeviceLiveStatus } from "../../helpers/app.helpers.js";
 
 export class DeviceDataHandler extends TopicHandler {
   /**
@@ -15,9 +15,12 @@ export class DeviceDataHandler extends TopicHandler {
   static handleDeviceData(topic, message) {
     const { macId, typeId } = TopicHandler.parseMacAndTypeId(topic);
     try {
-      console.log(
-        `Received data from MAC: ${macId} & Type: ${typeId}\n Message: ${message.toString()}`
-      );
+      // console.log(
+      //   `Received data from MAC: ${macId} & Type: ${typeId}\n Message: ${message.toString()}`
+      // );
+
+      // Update device live status
+      updateDeviceLiveStatus(macId);
 
       if (typeId != 0) {
         const { modbusData } = JSON.parse(message.toString());
@@ -40,7 +43,6 @@ export class DeviceDataHandler extends TopicHandler {
           decodeKey,
           message.toString()
         );
-        console.log("Decoded data", decodedData);
 
         getIo().emit(SOCKET_EVENTS.DEVICE_DATA(macId, typeId), {
           macId,
@@ -50,11 +52,6 @@ export class DeviceDataHandler extends TopicHandler {
       } else {
         // 4-20mA device types
         const { A } = JSON.parse(message.toString());
-
-        console.log(
-          "Emitting data for 4-20mA device types at topic",
-          SOCKET_EVENTS.DEVICE_DATA(macId, 0)
-        );
 
         getIo().emit(SOCKET_EVENTS.DEVICE_DATA(macId, 0), {
           macId,

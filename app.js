@@ -21,6 +21,7 @@ import { initMqttConnectionClient } from "./src/config/mqtt.config.js";
 import { createSocketConfig } from "./src/config/socket.config.js";
 import { DeviceDataDecoder } from "./src/handlers/data/DataDecoder.handler.js";
 import actionRoutes from "./src/routes/action.route.js";
+import { DeviceMonitorService } from "./src/services/deviceMonitor.service.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -103,6 +104,7 @@ const startServer = async () => {
     initMqttManager(io);
 
     await DeviceDataDecoder.initialize();
+    DeviceMonitorService.startMonitoring();
 
     server.listen(config.PORT, () => {
       logger.info(`Server started on port ${config.PORT}`);
