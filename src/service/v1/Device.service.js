@@ -6,6 +6,7 @@ export class DeviceService {
     try {
       const devices = await prisma.devices.findMany({
         select: {
+          id: true,
           macId: true,
           config: true,
           analog_input_type: true,

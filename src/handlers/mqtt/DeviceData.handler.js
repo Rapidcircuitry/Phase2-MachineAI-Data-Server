@@ -50,6 +50,8 @@ export class DeviceDataHandler extends TopicHandler {
           message.toString()
         );
 
+        DeviceDataDecoder.pushToBatch(macId, typeId, decodedData);
+
         getIo().emit(SOCKET_EVENTS.DEVICE_DATA(macId, typeId), {
           macId,
           typeId,
@@ -80,6 +82,8 @@ export class DeviceDataHandler extends TopicHandler {
         });
       }
     } catch (error) {
+      console.log(error);
+
       // customLogger.error(`Error in handleDeviceData: ${error.message}`);
       getIo().emit(
         SOCKET_EVENTS.DEVICE_DATA_ERROR(macId, typeId),

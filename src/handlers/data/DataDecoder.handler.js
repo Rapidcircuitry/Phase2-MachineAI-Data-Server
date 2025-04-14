@@ -2,11 +2,14 @@ import { customLogger } from "../../middlewares/logging.middleware.js";
 import { deviceTypeConfig } from "../../mock/deviceTypeConfig.js";
 import { DeviceService } from "../../service/v1/Device.service.js";
 import { TemplateService } from "../../service/v1/Template.service.js";
+import { DeviceDataService } from "../../services/DeivceData.service.js";
+import { BATCH_SIZE } from "../../utils/constants.js";
 import { getCombinedDeviceTypeId } from "../../utils/helpers/app.utils.js";
 
 export class DeviceDataDecoder {
   static #deviceTypeConfigs = new Map();
   static #devices = new Map();
+  static #deviceData = [];
   /**
    * Initialize the decoder with device configurations
    * Should be called when server starts
@@ -33,6 +36,8 @@ export class DeviceDataDecoder {
         });
       });
 
+      console.log(devices);
+
       console.log(`Device Configurations initialized`);
     } catch (error) {
       customLogger.error(
@@ -49,75 +54,6 @@ export class DeviceDataDecoder {
    */
   static getDeviceByMacId(macId) {
     return DeviceDataDecoder.#devices.get(macId);
-  }
-
-  /**
-   * Validate the decoded values against configured ranges
-   * @param {Object} config - Device type configuration
-   * @param {Array} decodedValues - Array of decoded values
-   * @returns {Array} Array of validation errors, empty if all valid
-   */
-  static #validateValues(config, decodedValues) {
-    const errors = [];
-    const { validRanges } = config.validation;
-
-    config.fields.forEach((field, index) => {
-      const value = decodedValues[index];
-
-      // Check if required field is present
-      if (
-        config.validation.requiredFields.includes(field.index) &&
-        (value === undefined || value === null)
-      ) {
-        errors.push(`Required field ${field.label} is missing`);
-        return;
-      }
-
-      // Check range validation if applicable
-      if (validRanges[field.category]) {
-        const range = validRanges[field.category];
-        if (value < range.min || value > range.max) {
-          errors.push(
-            `${field.label} value ${value} is outside valid range [${range.min}, ${range.max}]`
-          );
-        }
-      }
-    });
-
-    return errors;
-  }
-
-  /**
-   * Check for alarm conditions
-   * @param {Object} config - Device type configuration
-   * @param {Object} decodedData - Decoded data object
-   * @returns {Array} Array of alarm conditions
-   */
-  static #checkAlarms(config, decodedData) {
-    const alarms = [];
-
-    decodedData.readings.forEach((reading) => {
-      const fieldConfig = config.fields.find((f) => f.label === reading.label);
-      if (fieldConfig?.alarmThresholds) {
-        const { high, low } = fieldConfig.alarmThresholds;
-
-        if (high !== undefined && reading.value > high) {
-          alarms.push({
-            severity: "high",
-            message: `${reading.label} value ${reading.value} exceeds high threshold ${high}`,
-          });
-        }
-
-        if (low !== undefined && reading.value < low) {
-          alarms.push({
-            severity: "low",
-            message: `${reading.label} value ${reading.value} below low threshold ${low}`,
-          });
-        }
-      }
-    });
-
-    return alarms;
   }
 
   /**
@@ -197,5 +133,44 @@ export class DeviceDataDecoder {
       );
       return groups;
     }, {});
+  }
+
+  /**
+   * Store device data in batch
+   * @param {string} macId - Device macId
+   * @param {string} typeId - Device typeId
+   * @param {Object} data - Device data object
+   */
+  static async pushToBatch(macId, typeId, data) {
+    try {
+      // Get device id from macId
+      const deviceId = DeviceDataDecoder.#devices.get(macId).id;
+
+      DeviceDataDecoder.#deviceData.push({
+        deviceId,
+        typeId,
+        readings: data?.readings,
+        timestamp: data?.timestamp,
+      });
+
+      if (DeviceDataDecoder.#deviceData.length >= BATCH_SIZE) {
+        const preparedData = DeviceDataDecoder.#deviceData.map((item) => ({
+          deviceId: item.deviceId,
+          deviceTypeId: parseInt(item.typeId),
+          data: item.readings,
+          timestamp: item.timestamp,
+        }));
+
+        const storedData = await DeviceDataService.storeDeviceData(
+          preparedData
+        );
+        if (storedData.count === preparedData.length) {
+          DeviceDataDecoder.#deviceData = [];
+        }
+      }
+    } catch (error) {
+      customLogger.error(`Failed to push to batch: ${error.message}`);
+      throw error;
+    }
   }
 }

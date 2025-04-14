@@ -55,10 +55,10 @@ export const initMqttManager = (io) => {
 
   // Set up a single message handler for all topics
   client.on("message", (receivedTopic, message) => {
-    // console.log(
-    //   `Received message on topic ${receivedTopic}:`,
-    //   message.toString()
-    // );
+    console.log(
+      `Received message on topic ${receivedTopic}:`,
+      message.toString()
+    );
 
     // Find the appropriate handler for the received topic
     const handler = topicHandlers.find(({ matchingKey }) =>

@@ -78,7 +78,7 @@ model Devices {
   name                 String?                @map("device_name")
   description          String?                @map("device_description")
   macId                String                 @unique @map("device_mac_id")
-  chipId               String                 @unique @map("device_chip_id")
+  chipId               String                 @map("device_chip_id")
   config               Json?                  @map("device_custom_config")
   ioMapping            Json?                  @map("device_io_mapping")
   inputStates          Boolean[]              @default([false, false, false, false]) @map("device_input_states")
@@ -112,11 +112,12 @@ model Devices {
 }
 
 model DeviceData {
-  id        Int      @id @default(autoincrement()) @map("data_id")
-  deviceId  Int      @map("device_id")
-  data      Json     @map("data_payload")
-  timestamp DateTime @default(now()) @map("data_timestamp")
-  device    Devices  @relation(fields: [deviceId], references: [id])
+  id           Int      @id @default(autoincrement()) @map("data_id")
+  deviceId     Int      @map("device_id")
+  data         Json     @map("data_payload")
+  timestamp    DateTime @default(now()) @map("data_timestamp")
+  deviceTypeId Int      @map("device_type_id")
+  device       Devices  @relation(fields: [deviceId], references: [id])
 
   @@index([deviceId, timestamp], map: "device_data_deviceid_timestamp_index")
   @@map("DeviceDataInfo")
