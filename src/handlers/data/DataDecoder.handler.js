@@ -177,19 +177,21 @@ export class DeviceDataDecoder {
    * @param {string} macId - Device macId
    * @param {Object} data - Device data object
    */
-  static async pushToAnalogBatch(macId, data) {
+  static async pushToAnalogBatch(macId, data, type) {
+    console.log(data);
+    
     try {
       // Get device id from macId
       const device = DeviceDataDecoder.#devices.get(macId);
       const preparedData = {
         device_id: device.id,
-        input_type: device.analog_input_type,
-        input_min: device.analog_input_min,
-        input_max: device.analog_input_max,
-        received_value: data.receivedValue,
-        data_value: data.mappedValue,
-        data_unit: device.analog_input_unit,
-        data_label: device.analog_label,
+        input_type: type,
+        input_min: device.analog_input_min || 0,
+        input_max: device.analog_input_max || 0,
+        received_value: data.receivedValue || 0,
+        data_value: data.mappedValue || 0,
+        data_unit: device.analog_input_unit || "",
+        data_label: device.analog_label || "",
         timestamp: data.timestamp,
       };
 

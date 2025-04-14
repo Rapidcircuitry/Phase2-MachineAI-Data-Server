@@ -163,4 +163,5 @@ model AnalogDeviceDataInfo {
 enum AnalogInputType {
   FOUR_TO_TWENTY
   ZERO_TO_TEN
+  ERROR
 }

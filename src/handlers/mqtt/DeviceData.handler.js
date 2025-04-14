@@ -1,5 +1,9 @@
 import { getIo } from "../../config/socket.config.js";
-import { ANALOG_INPUT_TYPES, SOCKET_EVENTS } from "../../utils/constants.js";
+import {
+  ANALOG_INPUT_TYPES,
+  ANALOG_INPUT_TYPES_MAP,
+  SOCKET_EVENTS,
+} from "../../utils/constants.js";
 import {
   getCombinedDeviceTypeId,
   mapRange,
@@ -75,11 +79,17 @@ export class DeviceDataHandler extends TopicHandler {
           maxRange
         );
 
-        DeviceDataDecoder.pushToAnalogBatch(macId, {
-          receivedValue: A[1],
-          mappedValue,
-          timestamp: new Date().toISOString(),
-        });
+        const inputLabel = ANALOG_INPUT_TYPES_MAP(A[0]);
+
+        DeviceDataDecoder.pushToAnalogBatch(
+          macId,
+          {
+            receivedValue: A[1],
+            mappedValue,
+            timestamp: new Date().toISOString(),
+          },
+          inputLabel
+        );
 
         getIo().emit(SOCKET_EVENTS.DEVICE_DATA(macId, 0), {
           macId,

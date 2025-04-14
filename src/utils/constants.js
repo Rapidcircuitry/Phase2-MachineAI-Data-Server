@@ -160,3 +160,14 @@ export const ANALOG_INPUT_TYPES = Object.freeze({
     max: 10,
   },
 });
+
+export const ANALOG_INPUT_TYPES_MAP = (typeId) => {
+  switch (typeId) {
+    case 1:
+      return "FOUR_TO_TWENTY";
+    case 2:
+      return "ZERO_TO_TEN";
+    default:
+      return "ERROR";
+  }
+};
