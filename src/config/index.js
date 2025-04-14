@@ -52,5 +52,17 @@ export const config = {
     SMTP_PASSWORD: process.env.SMTP_PASSWORD,
     SMTP_FROM_EMAIL: process.env.SMTP_FROM_EMAIL,
   },
+  REDIS: {
+    USERNAME: process.env.REDIS_USERNAME,
+    HOST: process.env.REDIS_HOST,
+    PORT: process.env.REDIS_PORT,
+    PASSWORD: process.env.REDIS_PASSWORD,
+    TTL: {
+      HOUR_1: 60 * 60,
+      DAY_1: 60 * 60 * 24,
+      WEEK_1: 60 * 60 * 24 * 7,
+      MONTH_1: 60 * 60 * 24 * 30,
+    },
+  },
   SECURE_COOKIE: true,
 };
