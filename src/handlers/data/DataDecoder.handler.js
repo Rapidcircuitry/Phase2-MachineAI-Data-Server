@@ -9,6 +9,7 @@ export class DeviceDataDecoder {
   static #deviceTypeConfigs = new Map();
   static #devices = new Map();
   static #deviceData = [];
+  static #analogDeviceData = [];
   /**
    * Initialize the decoder with device configurations
    * Should be called when server starts
@@ -34,8 +35,6 @@ export class DeviceDataDecoder {
           );
         });
       });
-
-      console.log(devices);
 
       console.log(`Device Configurations initialized`);
     } catch (error) {
@@ -169,6 +168,43 @@ export class DeviceDataDecoder {
       }
     } catch (error) {
       customLogger.error(`Failed to push to batch: ${error.message}`);
+      throw error;
+    }
+  }
+
+  /**
+   * Store analog data in batch
+   * @param {string} macId - Device macId
+   * @param {Object} data - Device data object
+   */
+  static async pushToAnalogBatch(macId, data) {
+    try {
+      // Get device id from macId
+      const device = DeviceDataDecoder.#devices.get(macId);
+      const preparedData = {
+        device_id: device.id,
+        input_type: device.analog_input_type,
+        input_min: device.analog_input_min,
+        input_max: device.analog_input_max,
+        received_value: data.receivedValue,
+        data_value: data.mappedValue,
+        data_unit: device.analog_input_unit,
+        data_label: device.analog_label,
+        timestamp: data.timestamp,
+      };
+
+      DeviceDataDecoder.#analogDeviceData.push(preparedData);
+
+      if (DeviceDataDecoder.#analogDeviceData.length >= config.BATCH_SIZE) {
+        const storedData = await DeviceDataService.storeAnalogData(
+          DeviceDataDecoder.#analogDeviceData
+        );
+        if (storedData.count === DeviceDataDecoder.#analogDeviceData.length) {
+          DeviceDataDecoder.#analogDeviceData = [];
+        }
+      }
+    } catch (error) {
+      customLogger.error(`Failed to push to analog batch: ${error.message}`);
       throw error;
     }
   }

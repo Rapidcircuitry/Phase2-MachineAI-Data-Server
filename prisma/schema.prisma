@@ -149,11 +149,15 @@ model AnalogDeviceDataInfo {
   input_type     AnalogInputType
   input_min      Float
   input_max      Float
+  received_value Float
   data_value     Float
   data_unit      String
-  data_timestamp DateTime        @default(now())
+  timestamp      DateTime        @default(now())
   data_label     String
   DevicesInfo    Devices         @relation(fields: [device_id], references: [id])
+
+  @@index([device_id, timestamp], map: "analog_device_data_deviceid_timestamp_index")
+  @@map("AnalogDeviceDataInfo")
 }
 
 enum AnalogInputType {

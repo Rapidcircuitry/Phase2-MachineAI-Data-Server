@@ -75,6 +75,12 @@ export class DeviceDataHandler extends TopicHandler {
           maxRange
         );
 
+        DeviceDataDecoder.pushToAnalogBatch(macId, {
+          receivedValue: A[1],
+          mappedValue,
+          timestamp: new Date().toISOString(),
+        });
+
         getIo().emit(SOCKET_EVENTS.DEVICE_DATA(macId, 0), {
           macId,
           typeId,
@@ -82,8 +88,6 @@ export class DeviceDataHandler extends TopicHandler {
         });
       }
     } catch (error) {
-      console.log(error);
-
       // customLogger.error(`Error in handleDeviceData: ${error.message}`);
       getIo().emit(
         SOCKET_EVENTS.DEVICE_DATA_ERROR(macId, typeId),
