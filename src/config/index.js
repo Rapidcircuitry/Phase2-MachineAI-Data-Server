@@ -64,5 +64,6 @@ export const config = {
       MONTH_1: 60 * 60 * 24 * 30,
     },
   },
+  BATCH_SIZE: process.env.BATCH_SIZE,
   SECURE_COOKIE: true,
 };

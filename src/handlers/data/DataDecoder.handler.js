@@ -1,9 +1,8 @@
+import { config } from "../../config/index.js";
 import { customLogger } from "../../middlewares/logging.middleware.js";
-import { deviceTypeConfig } from "../../mock/deviceTypeConfig.js";
 import { DeviceService } from "../../service/v1/Device.service.js";
 import { TemplateService } from "../../service/v1/Template.service.js";
 import { DeviceDataService } from "../../services/DeivceData.service.js";
-import { BATCH_SIZE } from "../../utils/constants.js";
 import { getCombinedDeviceTypeId } from "../../utils/helpers/app.utils.js";
 
 export class DeviceDataDecoder {
@@ -153,7 +152,7 @@ export class DeviceDataDecoder {
         timestamp: data?.timestamp,
       });
 
-      if (DeviceDataDecoder.#deviceData.length >= BATCH_SIZE) {
+      if (DeviceDataDecoder.#deviceData.length >= config.BATCH_SIZE) {
         const preparedData = DeviceDataDecoder.#deviceData.map((item) => ({
           deviceId: item.deviceId,
           deviceTypeId: parseInt(item.typeId),

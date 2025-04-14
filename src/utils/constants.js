@@ -5,8 +5,6 @@ export const TOKEN_TYPES = {
 
 const ORGANIZATION = "onivart";
 
-export const BATCH_SIZE = 1;
-
 export const APPLICATION_ENV_TYPES = Object.freeze({
   DEV: "development",
   TEST: "testing",
