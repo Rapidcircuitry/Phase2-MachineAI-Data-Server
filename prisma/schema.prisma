@@ -8,20 +8,20 @@ datasource db {
 }
 
 model SystemUser {
-  id                  Int                @id @default(autoincrement()) @map("user_id")
-  fullName            String             @map("user_full_name")
-  email               String             @unique @map("user_email")
-  phone               String             @unique @map("user_phone")
-  isActive            Boolean            @default(true) @map("is_active")
-  isDeleted           Boolean            @default(false) @map("is_deleted")
-  isEmailVerified     Boolean            @default(false) @map("is_email_verified")
-  password            String             @map("user_password")
-  userType            String             @default("dashboard_user") @map("user_type")
-  resetToken          String?            @map("reset_token")
-  resetTokenExpiresAt DateTime?          @map("reset_token_expires_at")
-  createdAt           DateTime           @default(now()) @map("created_at")
-  updatedAt           DateTime           @updatedAt @map("updated_at")
-  sessions            SystemUserSession?
+  id                     Int                @id @default(autoincrement()) @map("user_id")
+  fullName               String             @map("user_full_name")
+  email                  String             @unique @map("user_email")
+  phone                  String             @unique @map("user_phone")
+  isActive               Boolean            @default(true) @map("is_active")
+  isDeleted              Boolean            @default(false) @map("is_deleted")
+  isEmailVerified        Boolean            @default(false) @map("is_email_verified")
+  password               String             @map("user_password")
+  user_type              String             @default("dashboard_user")
+  reset_token            String?
+  reset_token_expires_at DateTime?
+  createdAt              DateTime           @default(now()) @map("created_at")
+  updatedAt              DateTime           @updatedAt @map("updated_at")
+  sessions               SystemUserSession?
 
   @@index([email], map: "user_email_index")
   @@index([phone], map: "user_phone_index")
@@ -29,7 +29,7 @@ model SystemUser {
 }
 
 model SystemUserSession {
-  id         String     @id @default(uuid()) @map("session_id")
+  id         String     @id @map("session_id")
   userId     Int        @unique @map("user_id")
   token      String
   expiresAt  DateTime   @map("expires_at")
@@ -41,31 +41,19 @@ model SystemUserSession {
 }
 
 model DeviceType {
-  id                 Int                  @id @default(autoincrement()) @map("device_type_id")
-  name               String               @map("device_type_name")
-  description        String               @map("device_type_description")
-  model              String               @map("device_type_model")
-  manufacturer       String               @map("device_type_manufacturer")
-  protocol           String               @map("device_type_protocol")
-  isActive           Boolean              @default(true) @map("is_active")
-  isDeleted          Boolean              @default(false) @map("is_deleted")
-  createdAt          DateTime             @default(now()) @map("created_at")
-  updatedAt          DateTime             @updatedAt @map("updated_at")
-  DeviceToDeviceType DeviceToDeviceType[]
+  id                       Int                  @id @default(autoincrement()) @map("device_type_id")
+  name                     String               @map("device_type_name")
+  description              String               @map("device_type_description")
+  device_type_model        String
+  device_type_manufacturer String
+  device_type_protocol     String
+  isActive                 Boolean              @default(true) @map("is_active")
+  isDeleted                Boolean              @default(false) @map("is_deleted")
+  createdAt                DateTime             @default(now()) @map("created_at")
+  updatedAt                DateTime             @updatedAt @map("updated_at")
+  DeviceToDeviceType       DeviceToDeviceType[]
 
   @@map("DeviceTypeInfo")
-}
-
-model DeviceTemplate {
-  id          Int      @id @default(autoincrement()) @map("device_template_id")
-  name        String   @map("device_template_name")
-  description String?  @map("device_template_description")
-  config      Json     @map("device_template_config")
-  isActive    Boolean  @default(true) @map("is_active")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-
-  @@map("DeviceTemplateInfo")
 }
 
 model DeviceOwner {
@@ -74,7 +62,7 @@ model DeviceOwner {
   email     String    @unique @map("owner_email")
   phone     String?   @unique @map("owner_phone")
   isActive  Boolean   @default(true) @map("is_active")
-  deviceId  Int       @unique @map("device_id")
+  device_id Int       @unique
   isDeleted Boolean   @default(false) @map("is_deleted")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
@@ -107,14 +95,14 @@ model Devices {
   isDeleted            Boolean                @default(false) @map("is_deleted")
   createdAt            DateTime               @default(now()) @map("created_at")
   updatedAt            DateTime               @updatedAt @map("updated_at")
-  maxRange             Float?                 @map("analog_input_max")
-  minRange             Float?                 @map("analog_input_min")
-  analogInputType      AnalogInputType?       @map("analog_input_type")
-  unit                 String?                @map("analog_input_unit")
-  analogLabel          String?                @map("analog_label")
+  analog_input_max     Float?
+  analog_input_min     Float?
+  analog_input_type    AnalogInputType?
+  analog_input_unit    String?
+  analog_label         String?
   AnalogDeviceDataInfo AnalogDeviceDataInfo[]
   DeviceData           DeviceData[]
-  deviceTypes          DeviceToDeviceType[]
+  DeviceToDeviceType   DeviceToDeviceType[]
   owner                DeviceOwner?           @relation(fields: [ownerId], references: [id])
 
   @@index([macId], map: "device_mac_id_index")
@@ -123,27 +111,36 @@ model Devices {
   @@map("DevicesInfo")
 }
 
-model DeviceToDeviceType {
-  id           Int        @id @default(autoincrement())
-  deviceId     Int        @map("device_id")
-  deviceTypeId Int        @map("device_type_id")
-  device       Devices    @relation(fields: [deviceId], references: [id], onDelete: Cascade)
-  deviceType   DeviceType @relation(fields: [deviceTypeId], references: [id])
-
-  @@unique([deviceId, deviceTypeId], name: "unique_device_devicetype")
-  @@map("DeviceToDeviceType")
-}
-
 model DeviceData {
-  id             Int      @id @default(autoincrement()) @map("data_id")
-  deviceId       Int      @map("device_id")
-  data           Json     @map("data_payload")
-  timestamp      DateTime @default(now()) @map("data_timestamp")
-  device_type_id Int
-  device         Devices  @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  id           Int      @id @default(autoincrement()) @map("data_id")
+  deviceId     Int      @map("device_id")
+  data         Json     @map("data_payload")
+  timestamp    DateTime @default(now()) @map("data_timestamp")
+  deviceTypeId Int      @map("device_type_id")
+  device       Devices  @relation(fields: [deviceId], references: [id])
 
   @@index([deviceId, timestamp], map: "device_data_deviceid_timestamp_index")
   @@map("DeviceDataInfo")
+}
+
+model DeviceToDeviceType {
+  id             Int        @id @default(autoincrement())
+  device_id      Int
+  device_type_id Int
+  DevicesInfo    Devices    @relation(fields: [device_id], references: [id], onDelete: Cascade)
+  DeviceTypeInfo DeviceType @relation(fields: [device_type_id], references: [id])
+
+  @@unique([device_id, device_type_id])
+}
+
+model DeviceTemplateInfo {
+  device_template_id          Int      @id @default(autoincrement())
+  device_template_name        String
+  device_template_description String?
+  device_template_config      Json
+  is_active                   Boolean  @default(true)
+  created_at                  DateTime @default(now())
+  updated_at                  DateTime
 }
 
 model AnalogDeviceDataInfo {
@@ -152,14 +149,15 @@ model AnalogDeviceDataInfo {
   input_type     AnalogInputType
   input_min      Float
   input_max      Float
+  received_value Float
   data_value     Float
   data_unit      String
-  data_label     String
-  received_value Float
   timestamp      DateTime        @default(now())
-  DevicesInfo    Devices         @relation(fields: [device_id], references: [id], onDelete: Cascade)
+  data_label     String
+  DevicesInfo    Devices         @relation(fields: [device_id], references: [id])
 
   @@index([device_id, timestamp], map: "analog_device_data_deviceid_timestamp_index")
+  @@map("AnalogDeviceDataInfo")
 }
 
 enum AnalogInputType {

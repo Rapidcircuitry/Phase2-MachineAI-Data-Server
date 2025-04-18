@@ -98,7 +98,7 @@ export class DeviceDataHandler extends TopicHandler {
         });
       }
     } catch (error) {
-      // customLogger.error(`Error in handleDeviceData: ${error.message}`);
+      customLogger.error(`Error in handleDeviceData: ${error.message}`);
       getIo().emit(
         SOCKET_EVENTS.DEVICE_DATA_ERROR(macId, typeId),
         error.message
