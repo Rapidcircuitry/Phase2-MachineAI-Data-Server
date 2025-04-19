@@ -11,6 +11,7 @@ import {
 import { DeviceDataDecoder } from "../data/DataDecoder.handler.js";
 import { TopicHandler } from "./base.handler.js";
 import { updateDeviceLiveStatus } from "../../helpers/app.helpers.js";
+import { customLogger } from "../../middlewares/logging.middleware.js";
 
 export class DeviceDataHandler extends TopicHandler {
   /**

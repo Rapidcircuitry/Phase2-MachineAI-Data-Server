@@ -117,7 +117,7 @@ model DeviceData {
   data         Json     @map("data_payload")
   timestamp    DateTime @default(now()) @map("data_timestamp")
   deviceTypeId Int      @map("device_type_id")
-  device       Devices  @relation(fields: [deviceId], references: [id])
+  device       Devices  @relation(fields: [deviceId], references: [id], onDelete: Cascade)
 
   @@index([deviceId, timestamp], map: "device_data_deviceid_timestamp_index")
   @@map("DeviceDataInfo")
@@ -154,7 +154,7 @@ model AnalogDeviceDataInfo {
   data_unit      String
   timestamp      DateTime        @default(now())
   data_label     String
-  DevicesInfo    Devices         @relation(fields: [device_id], references: [id])
+  DevicesInfo    Devices         @relation(fields: [device_id], references: [id], onDelete: Cascade)
 
   @@index([device_id, timestamp], map: "analog_device_data_deviceid_timestamp_index")
   @@map("AnalogDeviceDataInfo")
