@@ -38,3 +38,13 @@ export const checkDeviceStatus = () => {
     }
   });
 };
+
+/**
+ * Get the current online devices
+ * @returns {Array} The current online devices
+ */
+export const getCurrentOnlineDevices = () => {
+  return Array.from(deviceLiveStatusMap.values()).filter(
+    (status) => status.isOnline
+  );
+};
