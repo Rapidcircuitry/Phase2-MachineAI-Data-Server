@@ -10,11 +10,22 @@ import { config } from "./index.js";
  * - Username: The username for authentication.
  * - Password: The password for authentication.
  */
-const client = mqtt.connect(config.MQTT.HOST, {
-  port: config.MQTT.PORT,
-  username: config.MQTT.USERNAME,
-  password: config.MQTT.PASSWORD,
-});
+const client = mqtt.connect(
+  config?.IS_PROD ? config.MQTT.HOST : config.MQTT_DEV.HOST,
+  config.IS_PROD
+    ? {
+        port: config.MQTT.PORT,
+        host: config.MQTT.HOST,
+        protocol: config.MQTT.PROTOCOL,
+        ca: config.MQTT.CA,
+        cert: config.MQTT.CERT,
+        key: config.MQTT.KEY,
+      }
+    : {
+        username: config.MQTT_DEV.USERNAME,
+        password: config.MQTT_DEV.PASSWORD,
+      }
+);
 
 /**
  * Initializes the MQTT connection client.
@@ -24,7 +35,11 @@ const client = mqtt.connect(config.MQTT.HOST, {
  */
 const initMqttConnectionClient = () => {
   client.on("connect", () => {
-    console.log("Connected to MQTT broker");
+    console.log(
+      `Connected to MQTT broker: ${
+        config.IS_PROD ? config.MQTT.HOST : config.MQTT_DEV.HOST
+      }`
+    );
   });
 };
 

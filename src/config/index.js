@@ -23,6 +23,7 @@ export const config = {
     methods: ["GET", "POST"],
   },
   ENV: process.env.NODE_ENV,
+  IS_PROD: process.env.NODE_ENV === APPLICATION_ENV_TYPES.PROD,
   API_VERSION: 1,
   JWT: {
     ACCESS_TOKEN: {
@@ -40,6 +41,16 @@ export const config = {
   },
   PROD_WEB_URL: process.env.CORS_PROD_ORIGIN,
   MQTT: {
+    HOST: process.env.AWS_MQTT_HOST,
+    PORT: process.env.AWS_MQTT_PORT,
+    USERNAME: process.env.MQTT_USERNAME,
+    PASSWORD: process.env.MQTT_PASSWORD,
+    PROTOCOL: process.env.AWS_MQTT_PROTOCOL,
+    CA: process.env.AWS_MQTT_CA,
+    CERT: process.env.AWS_MQTT_CERT,
+    KEY: process.env.AWS_MQTT_KEY,
+  },
+  MQTT_DEV: {
     HOST: process.env.MQTT_HOST,
     PORT: process.env.MQTT_PORT,
     USERNAME: process.env.MQTT_USERNAME,
