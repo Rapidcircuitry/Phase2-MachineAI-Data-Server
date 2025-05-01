@@ -1,0 +1,45 @@
+name: Deploy Application
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Connect to Server via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER_NAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Start SSH agent and add the key (optional if already connected securely)
+            eval "$(ssh-agent -s)"
+            ssh-add ~/.ssh/github_deploy_key
+
+            # Configure Git to use SSH
+            git config --global user.name "github-actions"
+            git config --global user.email "github-actions@github.com"
+            git config --global url."git@github.com:".insteadOf "https://github.com/"
+
+            # Clone repo if it doesn't exist
+            if [ ! -d "/MachineIO-Data-Server" ]; then
+              git clone git@github.com:Rapidcircuitry/MachineIO-Data-Server.git
+            fi
+
+            # Navigate to project directory
+            cd MachineIO-Data-Server
+
+            # Pull latest changes and install dependencies
+            git pull origin main
+            npm install
+
+            # Restart server with PM2
+            pm2 restart all
