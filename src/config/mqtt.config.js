@@ -12,7 +12,7 @@ import { config } from "./index.js";
  */
 const client = mqtt.connect(
   config?.IS_PROD ? config.MQTT.HOST : config.MQTT_DEV.HOST,
-  config.IS_PROD
+  config?.IS_PROD
     ? {
         port: config.MQTT.PORT,
         host: config.MQTT.HOST,

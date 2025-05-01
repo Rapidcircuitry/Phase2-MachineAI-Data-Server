@@ -23,7 +23,7 @@ export const config = {
     methods: ["GET", "POST"],
   },
   ENV: process.env.NODE_ENV,
-  IS_PROD: process.env.NODE_ENV === APPLICATION_ENV_TYPES.PROD,
+  IS_PROD: process.env.MQTT_ENV === APPLICATION_ENV_TYPES.PROD,
   API_VERSION: 1,
   JWT: {
     ACCESS_TOKEN: {
