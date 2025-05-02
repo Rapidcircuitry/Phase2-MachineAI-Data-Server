@@ -30,7 +30,7 @@ jobs:
             git config --global url."git@github.com:".insteadOf "https://github.com/"
 
             # Clone repo if it doesn't exist
-            if [ ! -d "/MachineIO-Data-Server" ]; then
+            if [ ! -d "MachineIO-Data-Server" ]; then
               git clone git@github.com:Rapidcircuitry/MachineIO-Data-Server.git
             fi
 
