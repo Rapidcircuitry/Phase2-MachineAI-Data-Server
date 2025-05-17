@@ -3,6 +3,7 @@ import { customLogger } from "../../middlewares/logging.middleware.js";
 import { DeviceService } from "../../service/v1/Device.service.js";
 import { TemplateService } from "../../service/v1/Template.service.js";
 import { DeviceDataService } from "../../services/DeivceData.service.js";
+import { DECIMAL_PRECISION } from "../../utils/constants.js";
 import { getCombinedDeviceTypeId } from "../../utils/helpers/app.utils.js";
 
 export class DeviceDataDecoder {
@@ -93,11 +94,24 @@ export class DeviceDataDecoder {
       }
 
       // Map raw values to configured fields
-      const readings = config.map((field) => ({
-        label: field.label,
-        value: modbusData[parseInt(field.index)],
-        unit: field.unit,
-      }));
+      const readings = config.map((field) => {
+        const index = parseInt(field.index, 10);
+        let value = modbusData[index];
+
+        if (typeof value !== "number") {
+          value = 0;
+        }
+
+        const formattedValue = Number.isInteger(value)
+          ? value
+          : parseFloat(value.toFixed(DECIMAL_PRECISION));
+
+        return {
+          label: field.label,
+          value: formattedValue,
+          unit: field.unit,
+        };
+      });
 
       const decodedData = {
         // deviceType: config.type,
@@ -178,8 +192,6 @@ export class DeviceDataDecoder {
    * @param {Object} data - Device data object
    */
   static async pushToAnalogBatch(macId, data, type) {
-    console.log(data);
-    
     try {
       // Get device id from macId
       const device = DeviceDataDecoder.#devices.get(macId);

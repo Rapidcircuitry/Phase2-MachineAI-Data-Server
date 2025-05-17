@@ -4,6 +4,7 @@ export const TOKEN_TYPES = {
 };
 
 const ORGANIZATION = "onivart";
+export const DECIMAL_PRECISION = 3;
 
 export const APPLICATION_ENV_TYPES = Object.freeze({
   DEV: "development",
