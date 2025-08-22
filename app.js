@@ -103,7 +103,7 @@ const startServer = async () => {
     initMqttConnectionClient();
     initMqttManager(io);
 
-    await DeviceDataDecoder.initialize();
+    // await DeviceDataDecoder.initialize();
     // DeviceMonitorService.startMonitoring();
 
     server.listen(config.PORT, () => {

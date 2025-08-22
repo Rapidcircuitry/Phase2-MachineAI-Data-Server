@@ -1,23 +1,28 @@
 import { prisma } from "../../../app.js";
 import { customLogger } from "../../middlewares/logging.middleware.js";
+import { mockDataFormat } from "../../utils/constants.js";
 
 export class TemplateService {
+  // static async loadAllTemplates() {
+  //   try {
+  //     const templates = await prisma.deviceTemplateInfo.findMany({
+  //       select: {
+  //         device_template_id: true,
+  //         device_template_config: true,
+  //       },
+  //       where: {
+  //         is_active: true,
+  //       },
+  //     });
+  //     return templates;
+  //   } catch (error) {
+  //     customLogger.error(error);
+  //     throw new Error("Failed to load templates");
+  //   }
+  // }
+
   static async loadAllTemplates() {
-    try {
-      const templates = await prisma.deviceTemplateInfo.findMany({
-        select: {
-          device_template_id: true,
-          device_template_config: true,
-        },
-        where: {
-          is_active: true,
-        },
-      });
-      return templates;
-    } catch (error) {
-      customLogger.error(error);
-      throw new Error("Failed to load templates");
-    }
+    return mockDataFormat;
   }
 
   static async getTemplateById(templateId) {

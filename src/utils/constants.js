@@ -52,16 +52,17 @@ export const TOPICS = {
     },
   },
   DATA: {
-    topic: `/${ORGANIZATION}/device-data/+/+`,
+    topic: `/${ORGANIZATION}/device-data/+/live`,
     type: "subscribe",
     matchingKey: "device-data",
   },
   TOGGLE_DATA_SENDING: {
-    topic: `/${ORGANIZATION}/device-toggle-data-sending/+`,
+    topic: `/${ORGANIZATION}/toggle-live-data/+`,
     type: "publish",
-    matchingKey: "device-toggle-data-sending",
+    matchingKey: "toggle-live-data",
     expectedFormat: {
-      sendingActive: "boolean",
+      isActive: "boolean",
+      ackId: "string",
     },
   },
   INPUT_STATES: {
@@ -125,7 +126,7 @@ export const SOCKET_EVENTS = {
   DEVICE_OUTPUT_STATES: "device-output-states",
   DEVICE_ACK: "device-ack",
   DEVICE_DATA_ERROR: (macId, typeId) => `device-data-error-${macId}-${typeId}`,
-  DEVICE_DATA: (macId, typeId) => `device-data-${macId}-${typeId}`,
+  DEVICE_DATA: (macId) => `device-data-${macId}-live`,
   DEVICE_STATUS: (macId) => `device:${macId}:status`,
 };
 
@@ -171,4 +172,17 @@ export const ANALOG_INPUT_TYPES_MAP = (typeId) => {
     default:
       return "ERROR";
   }
+};
+
+export const mockDataFormat = {
+  0: "R Phase Voltage",
+  1: "Y Phase Voltage",
+  2: "B Phase Voltage",
+  3: "R Phase Current",
+  4: "Y Phase Current",
+  5: "B Phase Current",
+  6: "Voltage",
+  7: "Current",
+  8: "Weight in Kgs",
+  9: "Gas flow",
 };

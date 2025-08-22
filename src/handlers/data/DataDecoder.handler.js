@@ -6,6 +6,19 @@ import { DeviceDataService } from "../../services/DeivceData.service.js";
 import { DECIMAL_PRECISION } from "../../utils/constants.js";
 import { getCombinedDeviceTypeId } from "../../utils/helpers/app.utils.js";
 
+export const mockDataFormat = {
+  0: "R Phase Voltage",
+  1: "Y Phase Voltage",
+  2: "B Phase Voltage",
+  3: "R Phase Current",
+  4: "Y Phase Current",
+  5: "B Phase Current",
+  6: "Voltage",
+  7: "Current",
+  8: "Weight in Kgs",
+  9: "Gas flow",
+};
+
 export class DeviceDataDecoder {
   static #deviceTypeConfigs = new Map();
   static #devices = new Map();
@@ -42,7 +55,7 @@ export class DeviceDataDecoder {
       customLogger.error(
         `Failed to initialize device decoder: ${error.message}`
       );
-      throw error;
+      // throw error;
     }
   }
 
