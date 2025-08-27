@@ -99,6 +99,16 @@ export const TOPICS = {
       ackId: "string",
     },
   },
+  // Alert Response
+  ALERT_RESPONSE: {
+    topic: `/${ORGANIZATION}/device-alert-resposne/+`,
+    type: "subscribe",
+    matchingKey: "device-alert-resposne",
+    expectedFormat: {
+      G: ["value", "0|1"], // 0: Min Alert, 1: Max Alert
+      W: ["value", "0|1"], // 0: Min Alert, 1: Max Alert
+    },
+  },
 };
 
 export const DEVICE_TYPES = {
@@ -186,3 +196,14 @@ export const mockDataFormat = {
   8: "Weight in Kgs",
   9: "Gas flow",
 };
+
+
+export const SENSOR_MAP = {
+    G: "Gas Sensor",
+    W: "Load Cell",
+  };
+
+export const ALERT_MAP = {
+    0: "Minimum Alert",
+    1: "Maximum Alert",
+  };

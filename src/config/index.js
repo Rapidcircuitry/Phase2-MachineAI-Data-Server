@@ -77,4 +77,5 @@ export const config = {
   },
   BATCH_SIZE: process.env.BATCH_SIZE,
   SECURE_COOKIE: true,
+  CLIENT_SERVER_URL: process.env.CLIENT_SERVER_URL || "http://localhost:5050",
 };
