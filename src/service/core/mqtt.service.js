@@ -1,7 +1,8 @@
-import { client } from "../../config/mqtt.config.js";
-import { DeviceDataHandler } from "../../handlers/mqtt/DeviceData.handler.js";
-import { TOPICS } from "../../utils/constants.js";
-import { AlertsHandler } from "../../handlers/mqtt/Alerts.handler.js";
+import { client } from "@/config/mqtt.config.js";
+import { DeviceDataHandler } from "@/handlers/mqtt/DeviceData.handler.js";
+import { TOPICS } from "@/utils/constants.js";
+import { AlertsHandler } from "@/handlers/mqtt/Alerts.handler.js";
+import { DataSyncHandler } from "@/handlers/mqtt/DataSync.handler.js";
 
 /**
  * Create the MQTT service to handle message publishing and topic management
@@ -19,6 +20,11 @@ export const createMqttService = () => {
         topic: TOPICS.DATA.topic,
         matchingKey: TOPICS.DATA.matchingKey,
         handler: DeviceDataHandler.handleDeviceData,
+      },
+      {
+        topic: TOPICS.SYNC_DATA.topic,
+        matchingKey: TOPICS.SYNC_DATA.matchingKey,
+        handler: DataSyncHandler.handleSyncData,
       },
       {
         topic: TOPICS.ALERT_RESPONSE.topic,

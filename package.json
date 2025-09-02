@@ -5,8 +5,8 @@
   "type": "module",
   "main": "app.js",
   "scripts": {
-    "start": "npx prisma generate && node app.js",
-    "dev": "nodemon app.js"
+    "start": "npx prisma generate && node --import ./loader.js app.js",
+    "dev": "nodemon --import ./loader.js app.js"
   },
   "author": "Lovely Sharma",
   "license": "ISC",
@@ -18,18 +18,23 @@
     "compression": "^1.7.5",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "dayjs": "^1.11.15",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "helmet": "^8.0.0",
     "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.2",
     "libphonenumber-js": "^1.11.19",
+    "module-alias": "^2.2.3",
     "morgan": "^1.10.0",
     "mqtt": "^5.10.3",
     "node-cache": "^5.1.2",
     "socket.io": "^4.8.1",
     "validator": "^13.12.0",
     "winston": "^3.17.0"
+  },
+  "_moduleAliases": {
+    "@": "src"
   },
   "devDependencies": {
     "prisma": "^6.1.0"

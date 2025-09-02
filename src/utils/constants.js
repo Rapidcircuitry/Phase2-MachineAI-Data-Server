@@ -99,6 +99,17 @@ export const TOPICS = {
       ackId: "string",
     },
   },
+  // Sync Data
+  SYNC_DATA: {
+    topic: `/${ORGANIZATION}/device-sync-data/+`,
+    type: "subscribe",
+    matchingKey: "device-sync-data",
+    expectedFormat: {
+      D: "array<float>", // array of 10 sub arrays
+      T: "array<int>", // array of 10 items
+      M: "timestamp", // starting timestamp
+    },
+  },
   // Alert Response
   ALERT_RESPONSE: {
     topic: `/${ORGANIZATION}/device-alert-resposne/+`,

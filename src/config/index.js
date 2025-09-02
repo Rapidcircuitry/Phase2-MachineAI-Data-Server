@@ -11,14 +11,14 @@ export const config = {
     origin:
       process.env.NODE_ENV === APPLICATION_ENV_TYPES.PROD
         ? [process.env.CORS_PROD_ORIGIN]
-        : [process.env.CORS_DEV_ORIGIN],
+        : [process.env.CORS_DEV_ORIGIN, "https://hdq2rxk0-5500.inc1.devtunnels.ms"],
     credentials: true,
   },
   SOCKET_CORS: {
     origin:
       process.env.NODE_ENV === APPLICATION_ENV_TYPES.PROD
         ? [process.env.CORS_PROD_ORIGIN]
-        : [process.env.CORS_DEV_ORIGIN],
+        : [process.env.CORS_DEV_ORIGIN, "https://hdq2rxk0-5500.inc1.devtunnels.ms"],
 
     methods: ["GET", "POST"],
   },

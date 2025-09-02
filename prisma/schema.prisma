@@ -16,11 +16,14 @@ model SystemUser {
   isDeleted              Boolean            @default(false) @map("is_deleted")
   isEmailVerified        Boolean            @default(false) @map("is_email_verified")
   password               String             @map("user_password")
-  user_type              String             @default("dashboard_user")
+  user_type              String             @default("organization_user")
   reset_token            String?
   reset_token_expires_at DateTime?
   createdAt              DateTime           @default(now()) @map("created_at")
   updatedAt              DateTime           @updatedAt @map("updated_at")
+  user_name              String             @unique @default("user")
+  is_blocked             Boolean            @default(false)
+  DevicesInfo            Devices[]
   sessions               SystemUserSession?
 
   @@index([email], map: "user_email_index")
@@ -35,7 +38,7 @@ model SystemUserSession {
   expiresAt  DateTime   @map("expires_at")
   createdAt  DateTime   @default(now()) @map("created_at")
   updatedAt  DateTime   @updatedAt @map("updated_at")
-  systemUser SystemUser @relation(fields: [userId], references: [id])
+  systemUser SystemUser @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("SystemUserSessionInfo")
 }
@@ -74,36 +77,46 @@ model DeviceOwner {
 }
 
 model Devices {
-  id                   Int                    @id @default(autoincrement()) @map("device_id")
-  name                 String?                @map("device_name")
-  description          String?                @map("device_description")
-  macId                String                 @unique @map("device_mac_id")
-  chipId               String                 @map("device_chip_id")
-  config               Json?                  @map("device_custom_config")
-  ioMapping            Json?                  @map("device_io_mapping")
-  inputStates          Boolean[]              @default([false, false, false, false]) @map("device_input_states")
-  outputStates         Boolean[]              @default([false, false, false, false]) @map("device_output_states")
-  dataInterval         Int?                   @map("device_data_interval")
-  emailScheduleTime    String?                @map("device_email_schedule_time")
-  cronSchedule         String?                @map("device_cron_schedule")
-  recipientEmails      String[]               @map("device_recipient_emails")
-  lastConnectedAt      DateTime?              @map("last_connected_at")
-  ownerId              Int?                   @map("owner_id")
-  isConfigured         Boolean                @default(false) @map("is_configured")
-  isPaused             Boolean                @default(false) @map("is_paused")
-  isActive             Boolean                @default(false) @map("is_active")
-  isDeleted            Boolean                @default(false) @map("is_deleted")
-  createdAt            DateTime               @default(now()) @map("created_at")
-  updatedAt            DateTime               @updatedAt @map("updated_at")
-  analog_input_max     Float?
-  analog_input_min     Float?
-  analog_input_type    AnalogInputType?
-  analog_input_unit    String?
-  analog_label         String?
-  AnalogDeviceDataInfo AnalogDeviceDataInfo[]
-  DeviceData           DeviceData[]
-  DeviceToDeviceType   DeviceToDeviceType[]
-  owner                DeviceOwner?           @relation(fields: [ownerId], references: [id])
+  id                     Int                      @id @default(autoincrement()) @map("device_id")
+  name                   String?                  @map("device_name")
+  description            String?                  @map("device_description")
+  macId                  String                   @unique @map("device_mac_id")
+  chipId                 String                   @map("device_chip_id")
+  config                 Json?                    @map("device_custom_config")
+  ioMapping              Json?                    @map("device_io_mapping")
+  inputStates            Boolean[]                @default([true, true, true, true]) @map("device_input_states")
+  outputStates           Boolean[]                @default([false, false, false, false]) @map("device_output_states")
+  dataInterval           Int?                     @map("device_data_interval")
+  emailScheduleTime      String?                  @map("device_email_schedule_time")
+  cronSchedule           String?                  @map("device_cron_schedule")
+  recipientEmails        String[]                 @map("device_recipient_emails")
+  lastConnectedAt        DateTime?                @map("last_connected_at")
+  isOnline               Boolean                  @default(false)
+  ownerId                Int?                     @map("owner_id")
+  isConfigured           Boolean                  @default(false) @map("is_configured")
+  isPaused               Boolean                  @default(false) @map("is_paused")
+  isActive               Boolean                  @default(false) @map("is_active")
+  isDeleted              Boolean                  @default(false) @map("is_deleted")
+  createdAt              DateTime                 @default(now()) @map("created_at")
+  updatedAt              DateTime                 @updatedAt @map("updated_at")
+  analog_input_max       Float?
+  analog_input_min       Float?
+  analog_input_type      AnalogInputType?
+  analog_input_unit      String?
+  analog_label           String?
+  user_id                Int?
+  sync_time              DateTime?
+  is_live                Boolean                  @default(false)
+  alertConfig            Json?
+  AlertHistoryInfo       AlertHistoryInfo[]
+  AnalogDeviceDataInfo   AnalogDeviceDataInfo[]
+  DeviceAlertLog         DeviceAlertLog[]
+  DeviceDailySummaryInfo DeviceDailySummaryInfo[]
+  DeviceData             DeviceData[]
+  DeviceRawDataInfo      DeviceRawDataInfo[]
+  DeviceToDeviceType     DeviceToDeviceType[]
+  owner                  DeviceOwner?             @relation(fields: [ownerId], references: [id])
+  SystemUserInfo         SystemUser?              @relation(fields: [user_id], references: [id])
 
   @@index([macId], map: "device_mac_id_index")
   @@index([chipId], map: "device_chip_id_index")
@@ -134,13 +147,14 @@ model DeviceToDeviceType {
 }
 
 model DeviceTemplateInfo {
-  device_template_id          Int      @id @default(autoincrement())
+  device_template_id          Int                           @id @default(autoincrement())
   device_template_name        String
   device_template_description String?
   device_template_config      Json
-  is_active                   Boolean  @default(true)
-  created_at                  DateTime @default(now())
+  is_active                   Boolean                       @default(true)
+  created_at                  DateTime                      @default(now())
   updated_at                  DateTime
+  DeviceTemplateParameterInfo DeviceTemplateParameterInfo[]
 }
 
 model AnalogDeviceDataInfo {
@@ -149,19 +163,107 @@ model AnalogDeviceDataInfo {
   input_type     AnalogInputType
   input_min      Float
   input_max      Float
-  received_value Float
   data_value     Float
   data_unit      String
-  timestamp      DateTime        @default(now())
   data_label     String
+  received_value Float
+  timestamp      DateTime        @default(now())
   DevicesInfo    Devices         @relation(fields: [device_id], references: [id], onDelete: Cascade)
 
   @@index([device_id, timestamp], map: "analog_device_data_deviceid_timestamp_index")
   @@map("AnalogDeviceDataInfo")
 }
 
+model AlertHistoryInfo {
+  alert_history_id Int         @id @default(autoincrement())
+  device_id        Int
+  sensor_type      String
+  sensor_value     Float
+  threshold_type   String
+  alert_type       String
+  alert_status     AlertStatus @default(QUEUED)
+  job_id           String?
+  email_sent_at    DateTime?
+  error_message    String?
+  created_at       DateTime    @default(now())
+  DevicesInfo      Devices     @relation(fields: [device_id], references: [id], onDelete: Cascade)
+
+  @@index([device_id, created_at], map: "alert_history_deviceid_created_index")
+}
+
+model DeviceAlertLog {
+  device_alert_log_id Int           @id @default(autoincrement())
+  parameterName       String
+  value               Float
+  thresholdType       ThresholdType
+  created_at          DateTime      @default(now())
+  device_id           Int
+  DevicesInfo         Devices       @relation(fields: [device_id], references: [id], onDelete: Cascade)
+}
+
+model DeviceDailySummaryInfo {
+  summary_id       Int      @id @default(autoincrement())
+  summary_date     DateTime
+  total_kwh        Float
+  total_kva        Float
+  avg_twh          Float
+  max_load         Float
+  min_load         Float
+  load_consumption Float
+  total_gas        Float
+  created_at       DateTime @default(now())
+  updated_at       DateTime
+  device_mac_id    String
+  DevicesInfo      Devices  @relation(fields: [device_mac_id], references: [macId], onDelete: Cascade)
+
+  @@unique([device_mac_id, summary_date], map: "unique_device_daily_summary")
+}
+
+model DeviceRawDataInfo {
+  data_id        Int      @id @default(autoincrement())
+  raw_data       Json
+  processed_data Json
+  data_timestamp DateTime @default(now())
+  device_type_id Int?
+  device_mac_id  String
+  DevicesInfo    Devices  @relation(fields: [device_mac_id], references: [macId], onDelete: Cascade)
+
+  @@index([device_mac_id, data_timestamp])
+}
+
+model DeviceTemplateParameterInfo {
+  id                 Int                @id @default(autoincrement())
+  device_template_id Int
+  index_position     Int
+  param_label        String
+  param_unit         String?
+  transform_type     TransformType?
+  transform_value    Float?
+  created_at         DateTime           @default(now())
+  updated_at         DateTime
+  DeviceTemplateInfo DeviceTemplateInfo @relation(fields: [device_template_id], references: [device_template_id], onDelete: Cascade)
+}
+
 enum AnalogInputType {
   FOUR_TO_TWENTY
   ZERO_TO_TEN
   ERROR
+}
+
+enum AlertStatus {
+  QUEUED
+  SENT
+  FAILED
+  RETRY
+}
+
+enum ThresholdType {
+  MIN
+  MAX
+}
+
+enum TransformType {
+  SCALE
+  OFFSET
+  FORMULA
 }
