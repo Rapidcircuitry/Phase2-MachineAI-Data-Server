@@ -37,10 +37,19 @@ export class DeviceDataHandler extends TopicHandler {
 
       // General device types
 
-      const parsedMessage = JSON.parse(message.toString());
+      let msg = message.toString();
+      let parsedMessage = null;
 
-      console.log(parsedMessage);
-      
+      // Remove trailing commas inside arrays/objects
+      msg = msg.replace(/,\s*([\]}])/g, "$1");
+
+      // Try parsing
+      try {
+        parsedMessage = JSON.parse(msg);
+        console.log(parsedMessage);
+      } catch (err) {
+        console.error("Invalid JSON after cleanup:", msg, err);
+      }
 
       // Check if data is in new array format (live mode)
       if (parsedMessage.D && Array.isArray(parsedMessage.D)) {
@@ -75,46 +84,45 @@ export class DeviceDataHandler extends TopicHandler {
 
         const sendPayload = {
           macId,
-          data: decodedData
+          data: decodedData,
         };
 
         console.log(sendPayload);
-        
 
         getIo().emit(SOCKET_EVENTS.DEVICE_DATA(macId), sendPayload);
-      // } else if (parsedMessage.modbusData) {
-      //   // Legacy format with modbusData
-      //   const { modbusData } = parsedMessage;
+        // } else if (parsedMessage.modbusData) {
+        //   // Legacy format with modbusData
+        //   const { modbusData } = parsedMessage;
 
-      //   // Basic data validation
-      //   if (
-      //     !modbusData ||
-      //     !Array.isArray(modbusData) ||
-      //     modbusData.length === 0
-      //   ) {
-      //     throw new Error(
-      //       `Invalid data format from MAC: ${macId}`
-      //     );
-      //   }
+        //   // Basic data validation
+        //   if (
+        //     !modbusData ||
+        //     !Array.isArray(modbusData) ||
+        //     modbusData.length === 0
+        //   ) {
+        //     throw new Error(
+        //       `Invalid data format from MAC: ${macId}`
+        //     );
+        //   }
 
-      //   // Regular device types
-      //   const decodeKey = getCombinedDeviceTypeId(macId, typeId);
+        //   // Regular device types
+        //   const decodeKey = getCombinedDeviceTypeId(macId, typeId);
 
-      //   const decodedData = DeviceDataDecoder.decode(
-      //     decodeKey,
-      //     message.toString()
-      //   );
+        //   const decodedData = DeviceDataDecoder.decode(
+        //     decodeKey,
+        //     message.toString()
+        //   );
 
-      //   // DeviceDataDecoder.pushToBatch(macId, typeId, decodedData);
+        //   // DeviceDataDecoder.pushToBatch(macId, typeId, decodedData);
 
-      //   getIo().emit(SOCKET_EVENTS.DEVICE_DATA(macId), {
-      //     macId,
-      //     data: { ...decodedData, timestamp: new Date().toISOString() },
-      //   });
-      // } else {
-      //   throw new Error(
-      //     `Invalid message format from MAC: ${macId} - expected 'data' array or 'modbusData'`
-      //   );
+        //   getIo().emit(SOCKET_EVENTS.DEVICE_DATA(macId), {
+        //     macId,
+        //     data: { ...decodedData, timestamp: new Date().toISOString() },
+        //   });
+        // } else {
+        //   throw new Error(
+        //     `Invalid message format from MAC: ${macId} - expected 'data' array or 'modbusData'`
+        //   );
       }
 
       // -----------------------------------------------
@@ -156,10 +164,7 @@ export class DeviceDataHandler extends TopicHandler {
       // });
     } catch (error) {
       customLogger.error(`Error in handleDeviceData: ${error.message}`);
-      getIo().emit(
-        SOCKET_EVENTS.DEVICE_DATA_ERROR(macId),
-        error.message
-      );
+      getIo().emit(SOCKET_EVENTS.DEVICE_DATA_ERROR(macId), error.message);
     }
   }
 }

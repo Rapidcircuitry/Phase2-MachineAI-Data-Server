@@ -11,16 +11,25 @@ export const config = {
     origin:
       process.env.NODE_ENV === APPLICATION_ENV_TYPES.PROD
         ? [process.env.CORS_PROD_ORIGIN]
-        : [process.env.CORS_DEV_ORIGIN, "https://hdq2rxk0-5500.inc1.devtunnels.ms"],
+        : [
+            process.env.CORS_DEV_ORIGIN,
+            "https://hdq2rxk0-5500.inc1.devtunnels.ms",
+          ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   },
   SOCKET_CORS: {
     origin:
       process.env.NODE_ENV === APPLICATION_ENV_TYPES.PROD
         ? [process.env.CORS_PROD_ORIGIN]
-        : [process.env.CORS_DEV_ORIGIN, "https://hdq2rxk0-5500.inc1.devtunnels.ms"],
-
+        : [
+            process.env.CORS_DEV_ORIGIN,
+            "https://hdq2rxk0-5500.inc1.devtunnels.ms",
+          ],
     methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   },
   ENV: process.env.NODE_ENV,
   IS_PROD: process.env.MQTT_ENV === APPLICATION_ENV_TYPES.PROD,
