@@ -3,7 +3,7 @@ export const TOKEN_TYPES = {
   REFRESH: "refresh",
 };
 
-const ORGANIZATION = "onivart";
+const ORGANIZATION = "welding";
 export const DECIMAL_PRECISION = 3;
 
 export const APPLICATION_ENV_TYPES = Object.freeze({
