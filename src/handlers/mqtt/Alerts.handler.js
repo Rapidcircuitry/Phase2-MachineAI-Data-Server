@@ -28,6 +28,8 @@ export class AlertsHandler extends TopicHandler {
       // Send alert notification to client server for email processing
       try {
         const clientServerUrl = config.CLIENT_SERVER_URL;
+        console.log("Client Server URL: ", clientServerUrl);
+
         const alertPayload = {
           macId,
           sensorName,
