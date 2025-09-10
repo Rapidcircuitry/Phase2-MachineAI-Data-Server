@@ -88,3 +88,5 @@ export const config = {
   SECURE_COOKIE: true,
   CLIENT_SERVER_URL: process.env.CLIENT_SERVER_URL || "http://localhost:5050",
 };
+
+console.log("Client Server URL: ", config.CLIENT_SERVER_URL);
