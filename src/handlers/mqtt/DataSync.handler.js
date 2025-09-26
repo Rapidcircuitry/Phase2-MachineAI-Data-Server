@@ -27,7 +27,7 @@ export class DataSyncHandler {
   static async handleSyncData(topic, message) {
     const deviceId = TopicHandler.parseMacId(topic, 3);
     console.log(deviceId);
-    
+
     // return;
 
     // Initialize buffer if first chunk
@@ -62,7 +62,7 @@ export class DataSyncHandler {
     // Process each chunk
     for (const chunk of allChunks) {
       console.log(chunk);
-      
+
       const processedRecords = DataSyncHandler.parseRawPayload(chunk, deviceId);
       await DeviceDataService.storeDeviceDataV2({
         deviceId,
@@ -128,6 +128,7 @@ export class DataSyncHandler {
     let totalKVA = 0;
     let totalWH = 0;
     let whCount = 0;
+    // NOTE: maxLoad and minLoad will store values in KILOGRAMS after conversion
     let maxLoad = Number.NEGATIVE_INFINITY;
     let minLoad = Number.POSITIVE_INFINITY;
     let totalGas = 0;
@@ -160,7 +161,12 @@ export class DataSyncHandler {
         const IDC = D[8][idx] || 0;
 
         // Load cell
-        const load = D[9][idx] || 0;
+        const rawLoadInGrams = D[9][idx] || 0;
+
+        // **KEY CHANGE: Convert grams to kilograms**
+        const loadInKgs = rawLoadInGrams / 1000;
+        const load = loadInKgs; // Use the converted value
+
         if (load > maxLoad) maxLoad = load;
         if (load < minLoad) minLoad = load;
 
@@ -186,8 +192,10 @@ export class DataSyncHandler {
       totalKWH,
       totalKVA,
       avgTWH,
+      // maxLoad and minLoad are now in KILOGRAMS
       maxLoad,
       minLoad,
+      // loadConsumption is also in KILOGRAMS
       loadConsumption,
       totalGas,
       summaryDate: new Date().toISOString(),
