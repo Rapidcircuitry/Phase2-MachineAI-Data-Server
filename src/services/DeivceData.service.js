@@ -89,7 +89,6 @@ export class DeviceDataService {
           updated_at: new Date(),
         },
         create: {
-          device_mac_id: summary.deviceId,
           summary_date: summary.summaryDate,
           total_kwh: summary.totalKWH,
           total_kva: summary.totalKVA,
