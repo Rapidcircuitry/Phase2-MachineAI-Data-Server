@@ -198,7 +198,8 @@ export class DataSyncHandler {
       // loadConsumption is also in KILOGRAMS
       loadConsumption,
       totalGas,
-      summaryDate: new Date().toISOString(),
+      // only todays date 
+      summaryDate: dayjs().format("YYYY-MM-DD"),
     };
   }
 }
