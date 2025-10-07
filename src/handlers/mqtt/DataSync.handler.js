@@ -199,7 +199,7 @@ export class DataSyncHandler {
       loadConsumption,
       totalGas,
       // only todays date 
-      summaryDate: dayjs().format("YYYY-MM-DD"),
+      summaryDate: dayjs().startOf('day').toISOString(),
     };
   }
 }
