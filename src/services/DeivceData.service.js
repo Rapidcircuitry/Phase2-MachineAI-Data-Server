@@ -99,6 +99,11 @@ export class DeviceDataService {
           load_consumption: summary.loadConsumption,
           total_gas: summary.totalGas,
           updated_at: new Date(),
+          DevicesInfo: {
+            connect: {
+              macId: summary.deviceId,
+            },
+          }
         },
       });
     } catch (error) {
