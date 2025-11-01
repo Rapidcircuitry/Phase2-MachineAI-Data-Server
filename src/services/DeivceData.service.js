@@ -42,7 +42,6 @@ export class DeviceDataService {
    */
   static async storeDeviceDataV2({ deviceId, rawData, processedData, typeId }) {
     try {
-
       // Write toa json file for testing
       fs.writeFileSync(
         "./test.json",
@@ -82,8 +81,8 @@ export class DeviceDataService {
           total_kwh: summary.totalKWH,
           total_kva: summary.totalKVA,
           avg_twh: summary.avgTWH,
-          max_load: summary.maxLoad,
-          min_load: summary.minLoad,
+          max_load: summary.maxLoad || 0,
+          min_load: summary.minLoad || 0,
           load_consumption: summary.loadConsumption,
           total_gas: summary.totalGas,
           updated_at: new Date(),
@@ -93,8 +92,8 @@ export class DeviceDataService {
           total_kwh: summary.totalKWH,
           total_kva: summary.totalKVA,
           avg_twh: summary.avgTWH,
-          max_load: summary.maxLoad,
-          min_load: summary.minLoad,
+          max_load: summary.maxLoad || 0,
+          min_load: summary.minLoad || 0,
           load_consumption: summary.loadConsumption,
           total_gas: summary.totalGas,
           updated_at: new Date(),
@@ -102,7 +101,7 @@ export class DeviceDataService {
             connect: {
               macId: summary.deviceId,
             },
-          }
+          },
         },
       });
     } catch (error) {
