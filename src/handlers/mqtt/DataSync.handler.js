@@ -179,7 +179,7 @@ export class DataSyncHandler {
         whCount += 1;
 
         // ✅ Gas integration
-        totalGas += gas * intervalHours;
+        totalGas += gas;
       });
     });
 
