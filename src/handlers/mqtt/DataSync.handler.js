@@ -175,7 +175,7 @@ export class DataSyncHandler {
         totalKVAH += apparentPowerKVA * intervalHours;
 
         // ✅ DC energy in Wh → kWh
-        totalWH += (VDC * IDC * intervalHours) / 1000;
+        totalWH += (VDC * IDC) / 1000;
         whCount += 1;
 
         // ✅ Gas integration
