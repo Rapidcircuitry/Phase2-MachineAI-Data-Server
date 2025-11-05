@@ -179,7 +179,7 @@ export class DataSyncHandler {
         whCount += 1;
 
         // ✅ Gas integration
-        totalGas += gas;
+        totalGas += gas * intervalHours;
       });
     });
 
@@ -196,7 +196,7 @@ export class DataSyncHandler {
       minLoad: minLoad === Number.POSITIVE_INFINITY ? 0 : parseFloat(minLoad.toFixed(3)),
       // if remained loadConsumption is -Infinity then set it to 0
       loadConsumption: loadConsumption === Number.NEGATIVE_INFINITY ? 0 : parseFloat(loadConsumption.toFixed(3)),
-      totalGas: parseFloat(totalGas.toFixed(3)),
+      totalGas: parseFloat(totalGas.toFixed(3) * 60),
       summaryDate: new Date().toISOString(),
     };
   }
